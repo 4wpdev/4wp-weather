@@ -1,0 +1,118 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "forwp/weather",
+  "version": "1.0.0",
+  "title": "4WP Weather",
+  "category": "widgets",
+  "icon": "cloud",
+  "description": "Weather snippet with pluggable providers (OpenWeatherMap live; others registered as roadmap stubs).",
+  "keywords": [
+    "weather",
+    "forecast",
+    "openweathermap"
+  ],
+  "textdomain": "4wp-weather",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "color": {
+      "background": true,
+      "text": true,
+      "gradients": true
+    },
+    "typography": {
+      "fontSize": true,
+      "fontFamily": true,
+      "lineHeight": true,
+      "fontStyle": true,
+      "fontWeight": true,
+      "letterSpacing": true,
+      "textDecoration": true,
+      "textTransform": true
+    },
+    "border": {
+      "color": true,
+      "radius": true,
+      "style": true,
+      "width": true
+    }
+  },
+  "attributes": {
+    "latitude": {
+      "type": "number",
+      "default": 50.75
+    },
+    "longitude": {
+      "type": "number",
+      "default": 25.34
+    },
+    "useBrowserGeolocation": {
+      "type": "boolean",
+      "default": true
+    },
+    "browserGeoTrigger": {
+      "type": "string",
+      "default": "auto",
+      "enum": [
+        "auto",
+        "button"
+      ]
+    },
+    "showLocationSearch": {
+      "type": "boolean",
+      "default": false
+    },
+    "provider": {
+      "type": "string",
+      "default": "openweathermap"
+    },
+    "showLocationName": {
+      "type": "boolean",
+      "default": true
+    },
+    "showTemperature": {
+      "type": "boolean",
+      "default": true
+    },
+    "showFeelsLike": {
+      "type": "boolean",
+      "default": true
+    },
+    "showCondition": {
+      "type": "boolean",
+      "default": true
+    },
+    "showHumidity": {
+      "type": "boolean",
+      "default": true
+    },
+    "showPressure": {
+      "type": "boolean",
+      "default": true
+    },
+    "showWindSpeed": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSunrise": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSunset": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,21 @@
+# Dependencies (regenerate: npm install / composer install)
+node_modules/
+vendor/
+
+# Logs & OS
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Local env (never commit secrets)
+.env
+.env.*
+
+# IDE (optional — remove lines if you prefer committing team settings)
+.idea/
+
+# Tooling artifacts
+coverage/
+.nyc_output/
+*.tsbuildinfo
