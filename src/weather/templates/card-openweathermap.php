@@ -94,10 +94,13 @@ defined( 'ABSPATH' ) || exit;
 		hidden
 	></p>
 	<?php if ( ! empty( $forwp_weather_output_json_ld ) ) : ?>
-		<script
-			type="application/ld+json"
-			id="forwp-weather-jsonld-<?php echo esc_attr( $forwp_instance_key ); ?>"
-		><?php
+		<?php
+		/*
+		 * Opening <script> must contain a space after the tag name (e.g. <script type=…>) so core
+		 * wptexturize() parses the tag as "script" and skips the JSON body (see _wptexturize_pushpop_element).
+		 */
+		?>
+		<script type="application/ld+json" id="forwp-weather-jsonld-<?php echo esc_attr( $forwp_instance_key ); ?>"><?php
 		$forwp_weather_jsonld_stub = wp_json_encode(
 			array(
 				'@context' => 'https://schema.org',
