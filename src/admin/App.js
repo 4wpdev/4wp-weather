@@ -61,7 +61,7 @@ function ProvidersPlaceholderIntro() {
 				</h3>
 				<p className="forwp-weather-intro-card__text">
 					{ __(
-						'4WP Weather adds a block that shows current conditions on your site. Data is loaded through WordPress (AJAX), cached for performance, and API secrets stay on the server.',
+						'4WP Weather adds a block that shows current conditions on your site. Data is loaded through the WordPress REST API, cached for performance, and API secrets stay on the server.',
 						'4wp-weather'
 					) }
 				</p>
@@ -504,7 +504,7 @@ function ProvidersTab( { onOpenWpCliDocs = () => {} } ) {
 								<>
 									<p className="forwp-weather-admin-muted forwp-weather-split__lead">
 										{ __(
-											'API secret is stored in WordPress only; blocks request weather through AJAX without exposing keys.',
+											'API secret is stored in WordPress only; blocks request weather through REST without exposing keys.',
 											'4wp-weather'
 										) }
 									</p>
@@ -846,7 +846,7 @@ function DocumentationTab() {
 						<h3>{ __( 'Overview', '4wp-weather' ) }</h3>
 						<p>
 							{ __(
-								'4WP Weather exposes a block that loads current conditions via AJAX. Requests are cached server-side; your API secret never reaches browsers.',
+								'4WP Weather exposes a block that loads current conditions via REST. Requests are cached server-side; your API secret never reaches browsers.',
 								'4wp-weather'
 							) }
 						</p>
@@ -878,7 +878,7 @@ function DocumentationTab() {
 						</h3>
 						<p>
 							{ __(
-								'Flush cached responses so the next AJAX call hits the upstream API:',
+								'Flush cached responses so the next REST request hits the upstream API:',
 								'4wp-weather'
 							) }
 						</p>

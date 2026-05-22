@@ -1,45 +1,76 @@
 === 4WP Weather ===
-Contributors: 4wp, Anatolikkk
+Contributors: 4wpdev, anatolikkk
+Tags: weather, gutenberg, block, openweathermap, forecast
 Requires at least: 6.4
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Weather block with pluggable providers (OpenWeatherMap live today; more via roadmap), server-side cache, admin credentials, and AJAX.
+Gutenberg weather block with pluggable providers, server-side API calls, and optional JSON-LD.
+
+== Description ==
+
+**4WP Weather** adds a block for current conditions on your site. Choose a provider, store your API key in WordPress (never in the browser), and load data through the REST API with server-side caching.
+
+A plugin by [4wp.dev](https://4wp.dev/). **4WP** is our project brand; this plugin is not affiliated with, endorsed, or sponsored by WordPress.
+
+Source code: [github.com/4wpdev/4wp-weather](https://github.com/4wpdev/4wp-weather) (when published).
+
+= Development =
+
+JavaScript and CSS are built with `@wordpress/scripts`. Human-readable source (`src/`, `package.json`, `webpack.config.js`) lives in the public GitHub repository — not in the distributed plugin ZIP.
+
+1. `cd` into the plugin directory
+2. `npm install`
+3. `npm run build` — outputs `build/weather/` and `build/admin/`
+
+= Key features =
+
+* Gutenberg block `forwp/weather` with OpenWeatherMap (more providers on the roadmap)
+* React admin: **Providers** (API key, live preview) and **Documentation**
+* Server-side upstream requests; optional **JSON-LD** (`Observation`)
+* WP-CLI: `wp forwp-weather flush-cache`
+
+= Privacy =
+
+The API key is stored as a WordPress option and is not exposed to front-end HTML or JavaScript. The block calls `forwp-weather/v1/weather`; PHP performs the remote request.
 
 == Installation ==
 
-1. Upload the plugin folder or install via ZIP upload.
-2. Run `composer install` inside the plugin directory if `vendor/` is not present.
-3. Run `npm install && npm run build` to compile block + admin assets into `build/` (includes `build/admin/`).
+1. Upload the plugin or install via ZIP.
+2. Run `composer install` in the plugin folder if `vendor/` is missing.
+3. Run `npm install && npm run build` if `build/` is missing.
 4. Activate **4WP Weather**.
-5. Open **4WP Weather** in the left admin menu (cloud icon), tab **Providers**, set **Credential provider** and API key, then save.
+5. Open **4WP Weather** in the admin menu → **Providers**, set provider and API key, save.
 
-== WP-CLI ==
+== Frequently Asked Questions ==
 
-* `wp forwp-weather flush-cache` — clears server-side cached weather payloads (WordPress transients tracked by the plugin). The reported count matches entries removed on that run.
+= Does the API key appear in the browser? =
 
-Example:
+No. Only WordPress talks to the weather API using the stored key.
 
-    wp forwp-weather flush-cache
-    Success: Flushed 3 cached weather entries.
+= Is JSON-LD required? =
 
-== Providers architecture ==
+No. Enable it under **Documentation** if you want structured data on public pages. There is no guarantee of rich results in search engines.
 
-* Live integration: **OpenWeatherMap** (`openweathermap`) — Current Weather 2.5 API; SSR shell template `src/weather/templates/card-openweathermap.php`.
-* Roadmap stubs (registered, disabled in UI): Tomorrow.io, Visual Crossing, Weatherbit, Open-Meteo, AccuWeather, Meteosource — same canonical payload shape when implemented later.
-* Extend or replace the map via filter `forwp_weather_providers` (must return `Weather_Provider_Interface` instances keyed by slug).
+= Which providers work today? =
 
-== Structured data (Schema.org) ==
+**OpenWeatherMap** is live. Additional providers are registered for future releases.
 
-Optional **JSON-LD** for the block: turn on **4WP Weather → Documentation → “Structured data (JSON-LD) on the site”**. After a successful front-end fetch the plugin updates a `script type="application/ld+json"` tag (schema.org `Observation` with `observationAbout` as a `Place`, plus measured fields where available). Output is for **public** pages only (not wp-admin). There is **no** guarantee of weather rich results in Google—useful mainly for semantics and other consumers.
+== Screenshots ==
 
-A minimal JSON-LD stub is also output in the card template when the option is on, then replaced in place after the AJAX response.
+1. Weather block on the front end
+2. Providers tab with API key and preview
+3. Block in the editor
 
-*(Still fond of table, tr, th, td — old-school habits die hard. — plugin author.)*
+== Changelog ==
 
-== Privacy ==
+= 1.0.0 =
+* Initial release: weather block, OpenWeatherMap, REST API, cache, admin UI, optional JSON-LD.
 
-The API key is stored as a WordPress option and never printed to HTML or JavaScript. Frontend scripts call WordPress AJAX which performs the remote request server-side.
+== Upgrade Notice ==
+
+= 1.0.0 =
+Initial release.

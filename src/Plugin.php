@@ -2,10 +2,10 @@
 /**
  * Plugin bootstrap.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather;
+namespace ForWP\Weather;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -40,8 +40,7 @@ final class Plugin {
 		Admin_Settings::instance()->boot();
 		Admin_Bar_Weather::boot();
 
-		$ajax = new Ajax_Handler();
-		$ajax->register();
+		Rest_Weather::register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( '\WP_CLI' ) ) {
 			\WP_CLI::add_command( 'forwp-weather flush-cache', array( Cli_Command::class, 'flush_cache' ) );
@@ -61,7 +60,7 @@ final class Plugin {
 	}
 
 	/**
-	 * Provide AJAX configuration to the frontend script handle registered by the block.
+	 * Provide REST configuration to the frontend script handle registered by the block.
 	 */
 	public function localize_view_script(): void {
 		if ( is_admin() ) {
@@ -80,9 +79,8 @@ final class Plugin {
 			$handle,
 			'forwpWeather',
 			array(
-				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( Ajax_Handler::action() ),
-				'action'       => Ajax_Handler::action(),
+				'restUrl'      => rest_url( 'forwp-weather/v1/' ),
+				'nonce'        => wp_create_nonce( 'wp_rest' ),
 				'providers'    => Provider_Registry::get_editor_choices(),
 				'outputJsonLd' => Admin_Settings::instance()->get_output_json_ld(),
 				'strings'      => array(

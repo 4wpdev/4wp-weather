@@ -2,10 +2,10 @@
 /**
  * WP-CLI commands.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather;
+namespace ForWP\Weather;
 
 defined( 'ABSPATH' ) || exit;
 

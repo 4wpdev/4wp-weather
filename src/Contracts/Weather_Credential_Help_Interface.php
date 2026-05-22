@@ -2,10 +2,10 @@
 /**
  * Optional admin hints for obtaining an upstream API key.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather\Contracts;
+namespace ForWP\Weather\Contracts;
 
 defined( 'ABSPATH' ) || exit;
 

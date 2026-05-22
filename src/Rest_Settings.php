@@ -2,10 +2,10 @@
 /**
  * REST API for the React settings screen.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather;
+namespace ForWP\Weather;
 
 use WP_REST_Request;
 use WP_REST_Response;
@@ -88,7 +88,7 @@ final class Rest_Settings {
 	}
 
 	/**
-	 * Live weather sample for the React preview panel (same stack as frontend AJAX).
+	 * Live weather sample for the React preview panel (same Weather_Service stack as the block).
 	 *
 	 * @param WP_REST_Request $request Request.
 	 */

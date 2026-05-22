@@ -2,7 +2,7 @@
 /**
  * Silence is golden.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
 // Silence is golden.

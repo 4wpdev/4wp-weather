@@ -214,7 +214,7 @@ function removeJsonLd( root ) {
 /**
  * Schema.org Observation + observationAbout Place (front-end only; toggled in plugin settings).
  *
- * @param {Record<string, unknown>} payload Normalized weather payload from AJAX.
+ * @param {Record<string, unknown>} payload Normalized weather payload from REST.
  */
 function buildJsonLd( payload ) {
 	const fetchedAt =
@@ -507,32 +507,37 @@ async function fetchWeather(
 		}
 	}
 
-	const body = new window.FormData();
-	body.append( 'action', window.forwpWeather.action );
-	body.append( 'nonce', window.forwpWeather.nonce );
-	body.append( 'lat', lat ?? '' );
-	body.append( 'lon', lon ?? '' );
-	body.append( 'provider', provider );
+	const restRoot = window.forwpWeather.restUrl || '';
+	const weatherUrl = new URL( 'weather', restRoot.endsWith( '/' ) ? restRoot : `${ restRoot }/` );
+	weatherUrl.searchParams.set( 'provider', provider );
+	weatherUrl.searchParams.set( 'lat', lat ?? '' );
+	weatherUrl.searchParams.set( 'lon', lon ?? '' );
 	if ( q !== '' ) {
-		body.append( 'location', q );
+		weatherUrl.searchParams.set( 'location', q );
+	}
+
+	const headers = {
+		Accept: 'application/json',
+	};
+	if ( window.forwpWeather.nonce ) {
+		headers[ 'X-WP-Nonce' ] = window.forwpWeather.nonce;
 	}
 
 	try {
-		const response = await window.fetch( window.forwpWeather.ajaxUrl, {
-			method: 'POST',
+		const response = await window.fetch( weatherUrl.toString(), {
+			method: 'GET',
 			credentials: 'same-origin',
-			body,
+			headers,
 		} );
 		const json = await response.json();
 
-		if ( ! json || ! json.success ) {
+		if ( ! response.ok ) {
 			throw new Error(
-				( json && json.data && json.data.message ) ||
-					'Weather request failed.'
+				( json && json.message ) || 'Weather request failed.'
 			);
 		}
 
-		applyPayload( root, json.data );
+		applyPayload( root, json );
 
 		if ( q !== '' ) {
 			persistStoredPlace( root, q );

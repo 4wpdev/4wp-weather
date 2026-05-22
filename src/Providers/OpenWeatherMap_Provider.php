@@ -2,14 +2,14 @@
 /**
  * OpenWeatherMap Current Weather API 2.5.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather\Providers;
+namespace ForWP\Weather\Providers;
 
-use Forwp\Weather\Admin_Settings;
-use Forwp\Weather\Contracts\Weather_Credential_Help_Interface;
-use Forwp\Weather\Contracts\Weather_Provider_Interface;
+use ForWP\Weather\Admin_Settings;
+use ForWP\Weather\Contracts\Weather_Credential_Help_Interface;
+use ForWP\Weather\Contracts\Weather_Provider_Interface;
 
 defined( 'ABSPATH' ) || exit;
 

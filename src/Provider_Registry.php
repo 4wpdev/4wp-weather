@@ -2,15 +2,15 @@
 /**
  * Registered weather providers (implemented + roadmap stubs).
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather;
+namespace ForWP\Weather;
 
-use Forwp\Weather\Contracts\Weather_Credential_Help_Interface;
-use Forwp\Weather\Contracts\Weather_Provider_Interface;
-use Forwp\Weather\Providers\OpenWeatherMap_Provider;
-use Forwp\Weather\Providers\Placeholder_Provider;
+use ForWP\Weather\Contracts\Weather_Credential_Help_Interface;
+use ForWP\Weather\Contracts\Weather_Provider_Interface;
+use ForWP\Weather\Providers\OpenWeatherMap_Provider;
+use ForWP\Weather\Providers\Placeholder_Provider;
 
 defined( 'ABSPATH' ) || exit;
 

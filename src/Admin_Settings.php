@@ -2,10 +2,10 @@
 /**
  * Admin menu and asset bootstrap for the React settings app.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather;
+namespace ForWP\Weather;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -114,8 +114,7 @@ final class Admin_Settings {
 		echo '<div class="wrap forwp-weather-admin-shell">';
 		echo '<h1 class="forwp-weather-admin-heading">';
 		echo '<span class="forwp-weather-admin-heading__icon" aria-hidden="true">';
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static SVG markup (no user input).
-		echo self::weather_heading_svg();
+		echo wp_kses( self::weather_heading_svg(), self::weather_heading_svg_allowed_html() );
 		echo '</span>';
 		echo '<span class="forwp-weather-admin-heading__text">';
 		echo esc_html__( '4WP Weather', '4wp-weather' );
@@ -123,6 +122,33 @@ final class Admin_Settings {
 		echo '</h1>';
 		echo '<div id="forwp-weather-admin-root" class="forwp-weather-admin-root" aria-live="polite"></div>';
 		echo '</div>';
+	}
+
+	/**
+	 * Allowed tags for the static admin heading SVG.
+	 *
+	 * @return array<string, array<string, bool>>
+	 */
+	private static function weather_heading_svg_allowed_html(): array {
+		return array(
+			'svg'  => array(
+				'xmlns'       => true,
+				'viewbox'     => true,
+				'width'       => true,
+				'height'      => true,
+				'fill'        => true,
+				'focusable'   => true,
+				'aria-hidden' => true,
+			),
+			'path' => array(
+				'd'               => true,
+				'fill'            => true,
+				'stroke'          => true,
+				'stroke-width'    => true,
+				'stroke-linecap'  => true,
+				'stroke-linejoin' => true,
+			),
+		);
 	}
 
 	/**
@@ -207,7 +233,7 @@ final class Admin_Settings {
 		$slug = is_string( $slug ) ? sanitize_key( $slug ) : '';
 
 		if ( '' === $slug || ! in_array( $slug, Provider_Registry::implemented_slugs(), true ) ) {
-			return \Forwp\Weather\Providers\OpenWeatherMap_Provider::SLUG;
+			return \ForWP\Weather\Providers\OpenWeatherMap_Provider::SLUG;
 		}
 
 		return $slug;

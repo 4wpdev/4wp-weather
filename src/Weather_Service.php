@@ -2,12 +2,12 @@
 /**
  * Cached weather retrieval delegated to providers.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather;
+namespace ForWP\Weather;
 
-use Forwp\Weather\Providers\OpenWeatherMap_Provider;
+use ForWP\Weather\Providers\OpenWeatherMap_Provider;
 
 defined( 'ABSPATH' ) || exit;
 

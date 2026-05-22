@@ -1,0 +1,1 @@
+{"version":1,"defects":[],"times":{"ForWP\\Weather\\Tests\\Unit\\Provider_RegistryTest::test_get_returns_openweathermap_provider":0.102,"ForWP\\Weather\\Tests\\Unit\\Provider_RegistryTest::test_get_returns_null_for_unknown_slug":0,"ForWP\\Weather\\Tests\\Unit\\Provider_RegistryTest::test_implemented_slugs_includes_openweathermap":0.002}}

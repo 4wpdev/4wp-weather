@@ -1,18 +1,43 @@
 {
 	"name": "4wp-dev/4wp-weather",
-	"description": "4WP Weather — multi-provider weather integration (pluggable upstreams), Gutenberg block, admin UI, and AJAX caching.",
+	"description": "4WP Weather — multi-provider weather integration (pluggable upstreams), Gutenberg block, admin UI, and REST caching.",
 	"type": "wordpress-plugin",
 	"version": "1.0.0",
 	"license": "GPL-2.0-or-later",
 	"require": {
 		"php": ">=7.4"
 	},
+	"require-dev": {
+		"4wpdev/4wp-dev-toolkit": "@dev"
+	},
+	"repositories": [
+		{
+			"type": "path",
+			"url": "../4wp-dev-toolkit",
+			"options": {
+				"symlink": true
+			}
+		}
+	],
 	"autoload": {
 		"psr-4": {
-			"Forwp\\Weather\\": "src/"
+			"ForWP\\Weather\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"ForWP\\Weather\\Tests\\": "tests/"
 		}
 	},
 	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
 		"sort-packages": true
+	},
+	"scripts": {
+		"lint": "phpcs",
+		"lint:fix": "phpcbf",
+		"test": "phpunit"
 	}
 }

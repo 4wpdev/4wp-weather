@@ -4,10 +4,10 @@
  *
  * Isolated on purpose: small feature, separate from Admin_Settings screen wiring.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather;
+namespace ForWP\Weather;
 
 defined( 'ABSPATH' ) || exit;
 

@@ -2,12 +2,12 @@
 /**
  * Roadmap provider stub (no HTTP).
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather\Providers;
+namespace ForWP\Weather\Providers;
 
-use Forwp\Weather\Contracts\Weather_Provider_Interface;
+use ForWP\Weather\Contracts\Weather_Provider_Interface;
 
 defined( 'ABSPATH' ) || exit;
 

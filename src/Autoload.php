@@ -2,10 +2,10 @@
 /**
  * Minimal PSR-4 autoloader fallback when Composer vendor is absent.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  */
 
-namespace Forwp\Weather;
+namespace ForWP\Weather;
 
 defined( 'ABSPATH' ) || exit;
 

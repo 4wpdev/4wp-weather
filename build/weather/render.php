@@ -2,7 +2,7 @@
 /**
  * Dynamic render template.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  *
  * @var array         $attributes Block attributes.
  * @var string        $content    Saved markup (unused).
@@ -11,9 +11,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-use Forwp\Weather\Admin_Settings;
-use Forwp\Weather\Provider_Registry;
-use Forwp\Weather\Providers\OpenWeatherMap_Provider;
+use ForWP\Weather\Admin_Settings;
+use ForWP\Weather\Provider_Registry;
+use ForWP\Weather\Providers\OpenWeatherMap_Provider;
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Dynamic block render template; variables are file scope from core include, not globals.
 $latitude  = isset( $attributes['latitude'] ) ? (float) $attributes['latitude'] : 0.0;

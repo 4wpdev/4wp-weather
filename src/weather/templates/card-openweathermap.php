@@ -4,7 +4,7 @@
  *
  * Used by OpenWeatherMap and as shared skeleton until other providers ship templates.
  *
- * @package Forwp\Weather
+ * @package ForWP\Weather
  *
  * @var array<string,bool>   $visibility               Field toggles.
  * @var array<string,string> $labels                   Field labels.
@@ -14,7 +14,7 @@
  * @var string               $forwp_weather_status_id       Unique id for status text (aria-describedby).
  * @var string               $forwp_weather_error_id        Unique id for the error container.
  * @var string               $forwp_instance_key            Block instance key (matches data-forwp-instance).
- * @var bool                 $forwp_weather_output_json_ld  When true, emit JSON-LD stub (filled after AJAX).
+ * @var bool                 $forwp_weather_output_json_ld  When true, emit JSON-LD stub (filled after REST fetch).
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -101,16 +101,17 @@ defined( 'ABSPATH' ) || exit;
 		 */
 		?>
 		<script type="application/ld+json" id="forwp-weather-jsonld-<?php echo esc_attr( $forwp_instance_key ); ?>"><?php
-		$forwp_weather_jsonld_stub = wp_json_encode(
+		echo wp_json_encode(
 			array(
-				'@context' => 'https://schema.org',
-				'@type'    => 'CreativeWork',
-				'name'     => __( 'Weather', '4wp-weather' ),
-			),
-			JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+				'@context'         => 'https://schema.org',
+				'@type'            => 'Observation',
+				'name'             => __( 'Current weather', '4wp-weather' ),
+				'observationAbout' => array(
+					'@type' => 'Place',
+					'name'  => __( 'Weather', '4wp-weather' ),
+				),
+			)
 		);
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- application/ld+json body must stay valid JSON.
-		echo $forwp_weather_jsonld_stub;
 		?></script>
 	<?php endif; ?>
 </div>
