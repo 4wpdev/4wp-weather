@@ -21,12 +21,12 @@ final class Autoload {
 	 */
 	public static function register(): void {
 		spl_autoload_register(
-			static function ( string $class ): void {
+			static function ( string $class_name ): void {
 				$prefix = __NAMESPACE__ . '\\';
-				if ( strncmp( $prefix, $class, strlen( $prefix ) ) !== 0 ) {
+				if ( strncmp( $prefix, $class_name, strlen( $prefix ) ) !== 0 ) {
 					return;
 				}
-				$relative = substr( $class, strlen( $prefix ) );
+				$relative = substr( $class_name, strlen( $prefix ) );
 				$file     = FORWP_WEATHER_PATH . 'src/' . str_replace( '\\', '/', $relative ) . '.php';
 				if ( is_readable( $file ) ) {
 					require_once $file;

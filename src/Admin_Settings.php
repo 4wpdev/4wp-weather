@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Admin_Settings {
 
-	public const OPTION_KEY                = 'forwp_weather_api_key';
+	public const OPTION_KEY = 'forwp_weather_api_key';
 
 	public const CREDENTIAL_PROVIDER_OPTION = 'forwp_weather_credential_provider';
 
@@ -37,10 +37,25 @@ final class Admin_Settings {
 	 */
 	public const OUTPUT_JSON_LD_OPTION = 'forwp_weather_output_json_ld';
 
+	/**
+	 * Singleton instance.
+	 *
+	 * @var self|null
+	 */
 	private static ?self $instance = null;
 
+	/**
+	 * Whether menu icon inline CSS was already registered.
+	 *
+	 * @var bool
+	 */
 	private static bool $menu_icon_fix_registered = false;
 
+	/**
+	 * Shared admin settings instance.
+	 *
+	 * @return self
+	 */
 	public static function instance(): self {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -49,8 +64,16 @@ final class Admin_Settings {
 		return self::$instance;
 	}
 
+	/**
+	 * Private constructor; use instance().
+	 */
 	private function __construct() {}
 
+	/**
+	 * Register admin menu, assets, and settings REST.
+	 *
+	 * @return void
+	 */
 	public function boot(): void {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_menu_icon_dimensions' ), 1 );
@@ -91,6 +114,11 @@ final class Admin_Settings {
 		);
 	}
 
+	/**
+	 * Register top-level admin menu page.
+	 *
+	 * @return void
+	 */
 	public function register_menu(): void {
 		add_menu_page(
 			__( '4WP Weather', '4wp-weather' ),
@@ -223,11 +251,21 @@ final class Admin_Settings {
 		return sanitize_text_field( trim( $value ) );
 	}
 
+	/**
+	 * Stored API key for the active credential provider.
+	 *
+	 * @return string
+	 */
 	public function get_api_key(): string {
 		$key = get_option( self::OPTION_KEY, '' );
 		return is_string( $key ) ? $key : '';
 	}
 
+	/**
+	 * Slug of the provider that receives the stored API key.
+	 *
+	 * @return string
+	 */
 	public function get_credential_provider(): string {
 		$slug = get_option( self::CREDENTIAL_PROVIDER_OPTION, '' );
 		$slug = is_string( $slug ) ? sanitize_key( $slug ) : '';

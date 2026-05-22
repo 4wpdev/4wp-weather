@@ -20,26 +20,54 @@ final class OpenWeatherMap_Provider implements Weather_Provider_Interface, Weath
 
 	public const SLUG = 'openweathermap';
 
+	/**
+	 * Provider slug.
+	 *
+	 * @return string
+	 */
 	public function get_slug(): string {
 		return self::SLUG;
 	}
 
+	/**
+	 * Human-readable provider name.
+	 *
+	 * @return string
+	 */
 	public function get_label(): string {
 		return __( 'OpenWeatherMap', '4wp-weather' );
 	}
 
+	/**
+	 * Whether this provider is implemented (not a stub).
+	 *
+	 * @return bool
+	 */
 	public function is_implemented(): bool {
 		return true;
 	}
 
+	/**
+	 * Whether credentials are configured for this provider.
+	 *
+	 * @return bool
+	 */
 	public function is_ready(): bool {
-		if ( Admin_Settings::instance()->get_credential_provider() !== self::SLUG ) {
+		if ( self::SLUG !== Admin_Settings::instance()->get_credential_provider() ) {
 			return false;
 		}
 
 		return '' !== Admin_Settings::instance()->get_api_key();
 	}
 
+	/**
+	 * Fetch current weather from OpenWeatherMap.
+	 *
+	 * @param float       $latitude        Latitude.
+	 * @param float       $longitude       Longitude.
+	 * @param string|null $location_query  Optional city query instead of coordinates.
+	 * @return array<string,mixed>|\WP_Error
+	 */
 	public function fetch_current( float $latitude, float $longitude, ?string $location_query = null ) {
 		if ( ! $this->is_ready() ) {
 			return new \WP_Error(
@@ -122,7 +150,7 @@ final class OpenWeatherMap_Provider implements Weather_Provider_Interface, Weath
 		if ( isset( $data['cod'] ) && is_numeric( $data['cod'] ) ) {
 			$api_cod = (int) $data['cod'];
 			if ( 200 !== $api_cod ) {
-				$detail = $api_message !== ''
+				$detail = '' !== $api_message
 					? $api_message
 					: __( 'Unexpected API response.', '4wp-weather' );
 
@@ -142,7 +170,7 @@ final class OpenWeatherMap_Provider implements Weather_Provider_Interface, Weath
 		}
 
 		if ( $code < 200 || $code >= 300 ) {
-			$detail = $api_message !== ''
+			$detail = '' !== $api_message
 				? $api_message
 				: __( 'Unexpected HTTP status.', '4wp-weather' );
 
@@ -163,10 +191,20 @@ final class OpenWeatherMap_Provider implements Weather_Provider_Interface, Weath
 		return $this->normalize_payload( $data );
 	}
 
+	/**
+	 * Path to the block card template for this provider.
+	 *
+	 * @return string
+	 */
 	public function get_card_template_path(): string {
 		return FORWP_WEATHER_PATH . 'src/weather/templates/card-openweathermap.php';
 	}
 
+	/**
+	 * Admin help text shown above the API key field.
+	 *
+	 * @return string
+	 */
 	public function get_api_key_help_intro(): string {
 		return __(
 			'Register at OpenWeatherMap and create an API key for “Current weather data”. Paste it here; it is never sent to browsers.',
@@ -174,10 +212,20 @@ final class OpenWeatherMap_Provider implements Weather_Provider_Interface, Weath
 		);
 	}
 
+	/**
+	 * URL to provider API key documentation.
+	 *
+	 * @return string
+	 */
 	public function get_api_key_docs_url(): string {
 		return 'https://openweathermap.org/appid';
 	}
 
+	/**
+	 * Link label for API key documentation.
+	 *
+	 * @return string
+	 */
 	public function get_api_key_docs_link_label(): string {
 		return __( 'Get your API key at OpenWeatherMap', '4wp-weather' );
 	}

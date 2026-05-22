@@ -19,10 +19,20 @@ final class Rest_Settings {
 
 	private const NAMESPACE = 'forwp-weather/v1';
 
+	/**
+	 * Hook REST route registration.
+	 *
+	 * @return void
+	 */
 	public static function register(): void {
 		add_action( 'rest_api_init', array( self::class, 'register_routes' ) );
 	}
 
+	/**
+	 * Register admin settings and preview routes.
+	 *
+	 * @return void
+	 */
 	public static function register_routes(): void {
 		register_rest_route(
 			self::NAMESPACE,
@@ -61,6 +71,11 @@ final class Rest_Settings {
 		);
 	}
 
+	/**
+	 * Whether the current user may manage weather settings.
+	 *
+	 * @return bool
+	 */
 	public static function can_manage(): bool {
 		return current_user_can( 'manage_options' );
 	}
@@ -73,11 +88,11 @@ final class Rest_Settings {
 
 		return new WP_REST_Response(
 			array(
-				'credential_provider' => Admin_Settings::instance()->get_credential_provider(),
-				'api_key_configured'  => '' !== $stored_key,
-				'api_key_length'      => strlen( $stored_key ),
-				'preview_latitude'    => Admin_Settings::instance()->get_preview_latitude_saved(),
-				'preview_longitude'   => Admin_Settings::instance()->get_preview_longitude_saved(),
+				'credential_provider'              => Admin_Settings::instance()->get_credential_provider(),
+				'api_key_configured'               => '' !== $stored_key,
+				'api_key_length'                   => strlen( $stored_key ),
+				'preview_latitude'                 => Admin_Settings::instance()->get_preview_latitude_saved(),
+				'preview_longitude'                => Admin_Settings::instance()->get_preview_longitude_saved(),
 				'location_change_cooldown_seconds' => Admin_Settings::instance()->get_location_change_cooldown_seconds(),
 				'show_admin_bar_weather'           => Admin_Settings::instance()->get_show_admin_bar_weather(),
 				'output_json_ld'                   => Admin_Settings::instance()->get_output_json_ld(),

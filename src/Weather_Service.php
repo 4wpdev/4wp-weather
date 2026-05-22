@@ -132,8 +132,8 @@ final class Weather_Service {
 	 * @return int Number of deleted transients.
 	 */
 	public static function flush_all_caches(): int {
-		$keys = get_option( self::REGISTRY_OPTION, array() );
-		$keys = is_array( $keys ) ? $keys : array();
+		$keys  = get_option( self::REGISTRY_OPTION, array() );
+		$keys  = is_array( $keys ) ? $keys : array();
 		$count = 0;
 		foreach ( $keys as $key ) {
 			if ( is_string( $key ) && '' !== $key ) {

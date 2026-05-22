@@ -20,6 +20,8 @@ defined( 'ABSPATH' ) || exit;
 final class Provider_Registry {
 
 	/**
+	 * Cached provider map after first load.
+	 *
 	 * @var array<string, Weather_Provider_Interface>|null
 	 */
 	private static ?array $providers = null;
@@ -73,6 +75,12 @@ final class Provider_Registry {
 		return self::$providers;
 	}
 
+	/**
+	 * Resolve a provider by slug.
+	 *
+	 * @param string $slug Provider slug.
+	 * @return Weather_Provider_Interface|null
+	 */
 	public static function get( string $slug ): ?Weather_Provider_Interface {
 		$slug = sanitize_key( $slug );
 		$all  = self::all();
@@ -104,7 +112,7 @@ final class Provider_Registry {
 	public static function get_editor_choices(): array {
 		$out = array();
 		foreach ( self::all() as $provider ) {
-			$impl = $provider->is_implemented();
+			$impl  = $provider->is_implemented();
 			$out[] = array(
 				'label'    => $impl
 					? $provider->get_label()
@@ -127,7 +135,7 @@ final class Provider_Registry {
 	 * @return array<int, array{slug: string, label: string, status: string, implemented: bool, api_key_help_intro?: string, api_key_docs_url?: string, api_key_docs_link_label?: string}>
 	 */
 	public static function get_admin_status_rows(): array {
-		$rows      = array();
+		$rows       = array();
 		$credential = Admin_Settings::instance()->get_credential_provider();
 
 		foreach ( self::all() as $provider ) {
@@ -156,8 +164,8 @@ final class Provider_Registry {
 					array( 'http', 'https' )
 				);
 				if ( '' !== $url ) {
-					$row['api_key_help_intro']       = $provider->get_api_key_help_intro();
-					$row['api_key_docs_url']         = $url;
+					$row['api_key_help_intro']      = $provider->get_api_key_help_intro();
+					$row['api_key_docs_url']        = $url;
 					$row['api_key_docs_link_label'] = $provider->get_api_key_docs_link_label();
 				}
 			}

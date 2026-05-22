@@ -14,6 +14,11 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Plugin {
 
+	/**
+	 * Singleton instance.
+	 *
+	 * @var self|null
+	 */
 	private static ?self $instance = null;
 
 	/**
@@ -27,6 +32,9 @@ final class Plugin {
 		return self::$instance;
 	}
 
+	/**
+	 * Private constructor; use instance().
+	 */
 	private function __construct() {}
 
 	/**

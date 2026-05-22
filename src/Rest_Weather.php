@@ -20,10 +20,20 @@ final class Rest_Weather {
 
 	private const NAMESPACE = 'forwp-weather/v1';
 
+	/**
+	 * Hook REST route registration.
+	 *
+	 * @return void
+	 */
 	public static function register(): void {
 		add_action( 'rest_api_init', array( self::class, 'register_routes' ) );
 	}
 
+	/**
+	 * Register public weather routes.
+	 *
+	 * @return void
+	 */
 	public static function register_routes(): void {
 		register_rest_route(
 			self::NAMESPACE,

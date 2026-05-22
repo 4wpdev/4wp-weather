@@ -17,6 +17,8 @@ defined( 'ABSPATH' ) || exit;
 final class Placeholder_Provider implements Weather_Provider_Interface {
 
 	/**
+	 * Roadmap provider stub.
+	 *
 	 * @param string $slug  Stable slug.
 	 * @param string $label Admin label.
 	 */
@@ -25,22 +27,50 @@ final class Placeholder_Provider implements Weather_Provider_Interface {
 		private string $label
 	) {}
 
+	/**
+	 * Provider slug.
+	 *
+	 * @return string
+	 */
 	public function get_slug(): string {
 		return $this->slug;
 	}
 
+	/**
+	 * Human-readable provider name.
+	 *
+	 * @return string
+	 */
 	public function get_label(): string {
 		return $this->label;
 	}
 
+	/**
+	 * Whether this provider is implemented (not a stub).
+	 *
+	 * @return bool
+	 */
 	public function is_implemented(): bool {
 		return false;
 	}
 
+	/**
+	 * Whether credentials are configured for this provider.
+	 *
+	 * @return bool
+	 */
 	public function is_ready(): bool {
 		return false;
 	}
 
+	/**
+	 * Fetch current weather (stub returns error).
+	 *
+	 * @param float       $latitude        Latitude.
+	 * @param float       $longitude       Longitude.
+	 * @param string|null $location_query  Optional city query.
+	 * @return \WP_Error
+	 */
 	public function fetch_current( float $latitude, float $longitude, ?string $location_query = null ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		return new \WP_Error(
 			'forwp_weather_provider_not_implemented',
@@ -48,6 +78,11 @@ final class Placeholder_Provider implements Weather_Provider_Interface {
 		);
 	}
 
+	/**
+	 * Path to the block card template (shared placeholder layout).
+	 *
+	 * @return string
+	 */
 	public function get_card_template_path(): string {
 		return FORWP_WEATHER_PATH . 'src/weather/templates/card-openweathermap.php';
 	}

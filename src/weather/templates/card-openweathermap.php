@@ -100,7 +100,8 @@ defined( 'ABSPATH' ) || exit;
 		 * wptexturize() parses the tag as "script" and skips the JSON body (see _wptexturize_pushpop_element).
 		 */
 		?>
-		<script type="application/ld+json" id="forwp-weather-jsonld-<?php echo esc_attr( $forwp_instance_key ); ?>"><?php
+		<script type="application/ld+json" id="forwp-weather-jsonld-<?php echo esc_attr( $forwp_instance_key ); ?>">
+		<?php
 		echo wp_json_encode(
 			array(
 				'@context'         => 'https://schema.org',
@@ -112,6 +113,7 @@ defined( 'ABSPATH' ) || exit;
 				),
 			)
 		);
-		?></script>
+		?>
+		</script>
 	<?php endif; ?>
 </div>

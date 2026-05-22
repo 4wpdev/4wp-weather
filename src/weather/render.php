@@ -101,7 +101,7 @@ $show_location_search = ! empty( $attributes['showLocationSearch'] );
 $forwp_weather_search_field_id = wp_unique_id( 'forwp-weather-search-' );
 
 $forwp_weather_status_id = 'forwp-weather-status-' . preg_replace( '/[^a-z0-9]/i', '', $forwp_instance_key );
-$forwp_weather_error_id   = 'forwp-weather-error-' . preg_replace( '/[^a-z0-9]/i', '', $forwp_instance_key );
+$forwp_weather_error_id  = 'forwp-weather-error-' . preg_replace( '/[^a-z0-9]/i', '', $forwp_instance_key );
 
 $forwp_weather_output_json_ld = Admin_Settings::instance()->get_output_json_ld();
 
