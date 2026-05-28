@@ -9,10 +9,7 @@
 .phpcs.xml.dist
 .phpcs.cache
 
-package.json
 package-lock.json
-webpack.config.js
-src/
 node_modules/
 vendor/
 
@@ -29,3 +26,5 @@ composer.json
 composer.lock
 
 .cursor/
+.phpunit.result.cache
+.phpunit.cache

@@ -16,11 +16,11 @@ Gutenberg weather block with pluggable providers, server-side API calls, and opt
 
 A plugin by [4wp.dev](https://4wp.dev/). **4WP** is our project brand; this plugin is not affiliated with, endorsed, or sponsored by WordPress.
 
-Source code: [github.com/4wpdev/4wp-weather](https://github.com/4wpdev/4wp-weather) (when published).
+Source code and releases: [github.com/4wpdev/4wp-weather](https://github.com/4wpdev/4wp-weather)
 
 = Development =
 
-JavaScript and CSS are built with `@wordpress/scripts`. Human-readable source (`src/`, `package.json`, `webpack.config.js`) lives in the public GitHub repository — not in the distributed plugin ZIP.
+JavaScript and CSS are built with `@wordpress/scripts`. The plugin ZIP includes human-readable source (`src/`, `package.json`, `webpack.config.js`) plus compiled `build/`. The same tree is mirrored on GitHub for development and releases.
 
 1. `cd` into the plugin directory
 2. `npm install`
@@ -39,11 +39,9 @@ The API key is stored as a WordPress option and is not exposed to front-end HTML
 
 == Installation ==
 
-1. Upload the plugin or install via ZIP.
-2. Run `composer install` in the plugin folder if `vendor/` is missing.
-3. Run `npm install && npm run build` if `build/` is missing.
-4. Activate **4WP Weather**.
-5. Open **4WP Weather** in the admin menu → **Providers**, set provider and API key, save.
+1. Upload the plugin to `/wp-content/plugins/4wp-weather/` or install from the Plugins screen.
+2. Activate **4WP Weather**.
+3. Open **4WP Weather** in the admin menu → **Providers**, set provider and API key, then save.
 
 == Frequently Asked Questions ==
 
