@@ -14,7 +14,7 @@ Gutenberg weather block with pluggable providers, server-side API calls, and opt
 
 **4WP Weather** adds a block for current conditions on your site. Choose a provider, store your API key in WordPress (never in the browser), and load data through the REST API with server-side caching.
 
-A plugin by [4wp.dev](https://4wp.dev/). **4WP** is our project brand; this plugin is not affiliated with, endorsed, or sponsored by WordPress.
+A plugin by [4wp.dev](https://4wp.dev/). **4WP** is our project brand; the letters "WP" appear only as part of that brand name, not as a reference to WordPress. This plugin is not affiliated with, endorsed, or sponsored by WordPress.
 
 Source code and releases: [github.com/4wpdev/4wp-weather](https://github.com/4wpdev/4wp-weather)
 
@@ -35,7 +35,24 @@ JavaScript and CSS are built with `@wordpress/scripts`. The plugin ZIP includes 
 
 = Privacy =
 
-The API key is stored as a WordPress option and is not exposed to front-end HTML or JavaScript. The block calls `forwp-weather/v1/weather`; PHP performs the remote request.
+The API key is stored as a WordPress option and is not exposed to front-end HTML or JavaScript. The block calls `forwp-weather/v1/weather`; PHP performs the remote request. See **External services** below for what is sent to OpenWeatherMap.
+
+== External services ==
+
+This plugin connects to the **OpenWeatherMap Current Weather API** to fetch conditions shown in the weather block, admin live preview, and optional JSON-LD.
+
+When a visitor loads a page with the block (or when an administrator uses the live preview), WordPress sends a **server-side** HTTPS request to `https://api.openweathermap.org/data/2.5/weather`. The request includes:
+
+* Your stored API key (`appid` query parameter), configured in the admin.
+* Either geographic coordinates (`lat`, `lon`) from the block attributes, from browser geolocation when the visitor allows it, or a default location you configure.
+* Or a city name (`q`) when a text location is configured instead of coordinates.
+
+This plugin does not send visitor IP addresses in the API request. OpenWeatherMap may log requests according to their own policies. Responses are cached on your server (WordPress transients) to reduce repeat API calls.
+
+This service is provided by **OpenWeather Ltd.** (OpenWeatherMap):
+
+* Terms of use: https://openweathermap.org/terms
+* Privacy policy: https://openweather.co.uk/privacy-policy
 
 == Installation ==
 

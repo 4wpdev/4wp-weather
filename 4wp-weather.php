@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       4WP Weather (Weather Forecast Block)
+ * Plugin Name:       4WP Weather
  * Plugin URI:        https://4wp.dev/
  * Description:       Pluggable weather providers, Gutenberg block, server-side cached fetches, admin credentials, REST API, and WP-CLI cache flush.
  * Version:           1.0.0
