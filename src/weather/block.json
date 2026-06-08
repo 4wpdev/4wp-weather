@@ -99,6 +99,20 @@
 		"showSunset": {
 			"type": "boolean",
 			"default": true
+		},
+		"fieldPresentation": {
+			"type": "object",
+			"default": {}
+		},
+		"widgetTemplate": {
+			"type": "string",
+			"default": "advanced",
+			"enum": [ "small", "compact", "advanced" ]
+		},
+		"widgetStyle": {
+			"type": "string",
+			"default": "dark",
+			"enum": [ "dark", "white" ]
 		}
 	},
 	"editorScript": "file:./index.js",

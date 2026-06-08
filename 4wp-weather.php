@@ -3,7 +3,7 @@
  * Plugin Name:       4WP Weather
  * Plugin URI:        https://4wp.dev/
  * Description:       Pluggable weather providers, Gutenberg block, server-side cached fetches, admin credentials, REST API, and WP-CLI cache flush.
- * Version:           1.0.0
+ * Version:           2.0.0
  * Requires at least: 6.4
  * Tested up to:      7.0
  * Requires PHP:      7.4
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FORWP_WEATHER_VERSION', '1.0.0' );
+define( 'FORWP_WEATHER_VERSION', '2.0.0' );
 define( 'FORWP_WEATHER_FILE', __FILE__ );
 define( 'FORWP_WEATHER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'FORWP_WEATHER_URL', plugin_dir_url( __FILE__ ) );
@@ -28,5 +28,12 @@ if ( file_exists( FORWP_WEATHER_PATH . 'vendor/autoload.php' ) ) {
 	require_once FORWP_WEATHER_PATH . 'src/Autoload.php';
 	ForWP\Weather\Autoload::register();
 }
+
+register_activation_hook(
+	FORWP_WEATHER_FILE,
+	static function (): void {
+		ForWP\Weather\Widget_Templates::maybe_seed_site_defaults();
+	}
+);
 
 ForWP\Weather\Plugin::instance()->boot();

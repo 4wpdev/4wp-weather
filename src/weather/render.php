@@ -12,8 +12,10 @@
 defined( 'ABSPATH' ) || exit;
 
 use ForWP\Weather\Admin_Settings;
+use ForWP\Weather\Field_Presentation;
 use ForWP\Weather\Provider_Registry;
 use ForWP\Weather\Providers\OpenWeatherMap_Provider;
+use ForWP\Weather\Widget_Templates;
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Dynamic block render template; variables are file scope from core include, not globals.
 $latitude  = isset( $attributes['latitude'] ) ? (float) $attributes['latitude'] : 0.0;
@@ -61,8 +63,19 @@ $forwp_instance_key = substr(
 	24
 );
 
+$widget_template = isset( $attributes['widgetTemplate'] ) ? sanitize_key( (string) $attributes['widgetTemplate'] ) : Widget_Templates::LAYOUT_ADVANCED;
+if ( ! in_array( $widget_template, Widget_Templates::layout_slugs(), true ) ) {
+	$widget_template = Widget_Templates::LAYOUT_ADVANCED;
+}
+
+$widget_style = isset( $attributes['widgetStyle'] ) ? sanitize_key( (string) $attributes['widgetStyle'] ) : Widget_Templates::STYLE_DARK;
+if ( ! in_array( $widget_style, Widget_Templates::style_slugs(), true ) ) {
+	$widget_style = Widget_Templates::STYLE_DARK;
+}
+
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
+		'class'                      => 'forwp-weather--template-' . $widget_template . ' forwp-weather--style-' . $widget_style,
 		'data-forwp-weather'         => '1',
 		'data-provider'              => $provider_slug,
 		'data-lat'                   => esc_attr( (string) round( $latitude, 6 ) ),
@@ -91,6 +104,9 @@ $labels = array(
 	'sunrise'      => __( 'Sunrise', '4wp-weather' ),
 	'sunset'       => __( 'Sunset', '4wp-weather' ),
 );
+
+$attributes               = Widget_Templates::apply_preset_field_presentation( $attributes );
+$forwp_field_presentation = Field_Presentation::resolve( $attributes );
 
 $card_template = $provider_obj ? $provider_obj->get_card_template_path() : '';
 

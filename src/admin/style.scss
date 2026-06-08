@@ -278,8 +278,9 @@
 			font-size: 10px;
 			letter-spacing: 0.05em;
 			padding: 6px 10px 6px 0;
-			width: 42%;
+			width: auto;
 			vertical-align: top;
+			white-space: nowrap;
 		}
 
 		td {
@@ -459,6 +460,127 @@
 		.forwp-weather-toolbar__hint {
 			flex: 0 1 auto;
 		}
+	}
+}
+
+.forwp-weather-admin-settings {
+	.forwp-weather-settings-intro {
+		margin-bottom: 1rem;
+	}
+
+	.forwp-weather-settings-layouts-title {
+		margin-top: 0.5rem;
+	}
+
+	.forwp-weather-settings-style-panel {
+		margin: 1.25rem 0;
+	}
+
+	.forwp-weather-settings-summary {
+		margin-bottom: 1rem;
+	}
+
+	.forwp-weather-settings-actions {
+		display: flex;
+		gap: 8px;
+	}
+}
+
+.forwp-weather-template-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 14px;
+}
+
+.forwp-weather-template-card-wrap {
+	border-radius: 9px;
+	cursor: pointer;
+	outline: none;
+
+	&:focus-visible {
+		box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--wp-admin-theme-color, #3858e9);
+	}
+
+	&.is-selected .forwp-weather-template-card {
+		border-color: var(--wp-admin-theme-color, #3858e9) !important;
+		box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #3858e9);
+	}
+}
+
+.forwp-weather-template-card {
+	border-radius: 8px;
+	box-shadow: none !important;
+	border: 1px solid #e8e8e8 !important;
+
+	.components-card__header {
+		padding: 12px 14px 6px;
+	}
+}
+
+.forwp-weather-template-card-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.forwp-weather-template-label {
+	font-weight: 600;
+	font-size: 14px;
+}
+
+.forwp-weather-template-desc {
+	margin: 0 0 0.65rem;
+	font-size: 13px;
+	color: #646970;
+	line-height: 1.45;
+}
+
+.forwp-weather-template-fields {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 12px;
+
+	li {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+		padding: 0.2rem 0;
+		border-top: 1px solid #f0f0f1;
+
+		&:first-child {
+			border-top: none;
+		}
+	}
+}
+
+.forwp-weather-template-fields__chip {
+	color: #646970;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 11px;
+}
+
+.forwp-weather-style-switcher {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 0.5rem;
+}
+
+.forwp-weather-style-switcher__btn--dark {
+	&.is-primary {
+		background: #1a2332;
+		border-color: #1a2332;
+	}
+}
+
+.forwp-weather-style-switcher__btn--white {
+	&.is-primary {
+		background: #fff;
+		border-color: #c3c4c7;
+		color: #1a2332;
 	}
 }
 

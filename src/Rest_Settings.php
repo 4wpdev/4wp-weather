@@ -96,6 +96,10 @@ final class Rest_Settings {
 				'location_change_cooldown_seconds' => Admin_Settings::instance()->get_location_change_cooldown_seconds(),
 				'show_admin_bar_weather'           => Admin_Settings::instance()->get_show_admin_bar_weather(),
 				'output_json_ld'                   => Admin_Settings::instance()->get_output_json_ld(),
+				'default_widget_layout'            => Widget_Templates::get_site_default_layout(),
+				'default_widget_style'             => Widget_Templates::get_site_default_style(),
+				'widget_layouts'                   => Widget_Templates::get_admin_template_rows(),
+				'widget_styles'                    => Widget_Templates::get_style_catalog(),
 				'providers'                        => Provider_Registry::get_admin_status_rows(),
 			),
 			200
@@ -220,6 +224,17 @@ final class Rest_Settings {
 				wp_validate_boolean( $params['output_json_ld'] ),
 				false
 			);
+		}
+
+		if ( array_key_exists( 'default_widget_layout', $params ) || array_key_exists( 'default_widget_style', $params ) ) {
+			$layout = array_key_exists( 'default_widget_layout', $params )
+				? sanitize_key( (string) $params['default_widget_layout'] )
+				: Widget_Templates::get_site_default_layout();
+			$style  = array_key_exists( 'default_widget_style', $params )
+				? sanitize_key( (string) $params['default_widget_style'] )
+				: Widget_Templates::get_site_default_style();
+
+			Widget_Templates::save_site_defaults( $layout, $style );
 		}
 
 		return self::get_settings();

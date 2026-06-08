@@ -14,7 +14,11 @@ node_modules/
 vendor/
 
 docs/
+info/
 README.md
+icon.png
+.wordpress-org/
+scripts/
 TEMP.md
 scripts/
 

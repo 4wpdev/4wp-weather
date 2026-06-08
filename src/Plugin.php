@@ -42,8 +42,11 @@ final class Plugin {
 	 */
 	public function boot(): void {
 		add_action( 'init', array( $this, 'register_block' ) );
+		add_filter( 'block_type_metadata', array( $this, 'filter_block_metadata_defaults' ), 10, 1 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'localize_view_script' ), 20 );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'localize_editor_providers' ), 20 );
+
+		Widget_Templates::maybe_seed_site_defaults();
 
 		Admin_Settings::instance()->boot();
 		Admin_Bar_Weather::boot();
@@ -112,5 +115,60 @@ final class Plugin {
 			'window.forwpWeatherProviders = ' . wp_json_encode( Provider_Registry::get_editor_choices() ) . ';',
 			'before'
 		);
+
+		$presets = array();
+		foreach ( Widget_Templates::layout_slugs() as $layout ) {
+			foreach ( Widget_Templates::style_slugs() as $style ) {
+				$key           = $layout . ':' . $style;
+				$presets[ $key ] = Widget_Templates::get_preset_attributes( $layout, $style );
+			}
+		}
+
+		wp_add_inline_script(
+			$handle,
+			'window.forwpWeatherTemplates = ' . wp_json_encode(
+				array(
+					'defaultLayout' => Widget_Templates::get_site_default_layout(),
+					'defaultStyle'  => Widget_Templates::get_site_default_style(),
+					'layouts'       => Widget_Templates::get_layout_catalog(),
+					'styles'        => Widget_Templates::get_style_catalog(),
+					'presets'       => $presets,
+				)
+			) . ';',
+			'before'
+		);
 	}
+
+	/**
+	 * New blocks inherit site default widget template attributes.
+	 *
+	 * @param array<string, mixed> $metadata Block metadata from block.json.
+	 * @return array<string, mixed>
+	 */
+	public function filter_block_metadata_defaults( array $metadata ): array {
+		if ( ( $metadata['name'] ?? '' ) !== 'forwp/weather' ) {
+			return $metadata;
+		}
+
+		if ( ! isset( $metadata['attributes'] ) || ! is_array( $metadata['attributes'] ) ) {
+			$metadata['attributes'] = array();
+		}
+
+		/*
+		 * Only seed layout/style for new inserts. Do not override show* or
+		 * fieldPresentation defaults site-wide — that breaks saved per-block overrides on render.
+		 */
+		$layout_default = Widget_Templates::get_site_default_layout();
+		$style_default  = Widget_Templates::get_site_default_style();
+
+		if ( isset( $metadata['attributes']['widgetTemplate'] ) ) {
+			$metadata['attributes']['widgetTemplate']['default'] = $layout_default;
+		}
+		if ( isset( $metadata['attributes']['widgetStyle'] ) ) {
+			$metadata['attributes']['widgetStyle']['default'] = $style_default;
+		}
+
+		return $metadata;
+	}
+
 }

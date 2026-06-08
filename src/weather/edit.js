@@ -2,14 +2,53 @@
  * Editor UI.
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect, useMemo } from '@wordpress/element';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import {
+	BaseControl,
 	PanelBody,
-	PanelRow,
 	SelectControl,
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
+import { ParamCollapsible } from './param-collapsible';
+import { TypeSwitcher } from './type-switcher';
+import { FieldLabelPreview } from './field-label';
+import { CustomIconPicker } from './custom-icon-picker';
+import { IconPicker } from './icon-picker';
+import {
+	PRESENTATION_MODES,
+	TYPE_OPTIONS,
+	WEATHER_FIELDS,
+	resolveFieldRow,
+} from './fields';
+import {
+	applyWidgetPreset,
+	getPresetAttributes,
+	getTemplatesConfig,
+	LAYOUTS,
+	needsPresetFieldPresentation,
+	STYLES,
+	withPresetFieldPresentation,
+} from './templates';
+
+function updateFieldPresentation( fieldKey, patch, fieldPresentation, setAttributes, defaultIcon ) {
+	const current = resolveFieldRow(
+		fieldPresentation,
+		fieldKey,
+		defaultIcon
+	);
+
+	setAttributes( {
+		fieldPresentation: {
+			...( fieldPresentation || {} ),
+			[ fieldKey ]: {
+				...current,
+				...patch,
+			},
+		},
+	} );
+}
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
@@ -19,16 +58,72 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		browserGeoTrigger = 'auto',
 		showLocationSearch = false,
 		provider,
-		showLocationName,
-		showTemperature,
-		showFeelsLike,
-		showCondition,
-		showHumidity,
-		showPressure,
-		showWindSpeed,
-		showSunrise,
-		showSunset,
+		widgetTemplate = LAYOUTS.ADVANCED,
+		widgetStyle = STYLES.DARK,
 	} = attributes;
+
+	const displayAttributes = useMemo(
+		() => withPresetFieldPresentation( attributes ),
+		[ attributes ]
+	);
+	const fieldPresentation = displayAttributes.fieldPresentation || {};
+
+	useEffect( () => {
+		if ( ! needsPresetFieldPresentation( attributes.fieldPresentation ) ) {
+			return;
+		}
+
+		const preset = getPresetAttributes( widgetTemplate, widgetStyle );
+		if ( preset ) {
+			setAttributes( preset );
+		}
+	}, [
+		attributes.fieldPresentation,
+		widgetTemplate,
+		widgetStyle,
+		setAttributes,
+	] );
+
+	const templatesConfig = getTemplatesConfig();
+	const layoutOptions =
+		templatesConfig?.layouts?.map( ( item ) => ( {
+			label: item.label,
+			shortLabel: item.label,
+			value: item.slug,
+		} ) ) || [
+			{
+				label: __( 'Small', '4wp-weather' ),
+				shortLabel: __( 'Small', '4wp-weather' ),
+				value: LAYOUTS.SMALL,
+			},
+			{
+				label: __( 'Compact', '4wp-weather' ),
+				shortLabel: __( 'Compact', '4wp-weather' ),
+				value: LAYOUTS.COMPACT,
+			},
+			{
+				label: __( 'Advanced', '4wp-weather' ),
+				shortLabel: __( 'Advanced', '4wp-weather' ),
+				value: LAYOUTS.ADVANCED,
+			},
+		];
+	const styleOptions =
+		templatesConfig?.styles?.map( ( item ) => ( {
+			label: item.label,
+			shortLabel: item.label,
+			value: item.slug,
+		} ) ) || [
+			{
+				label: __( 'Dark', '4wp-weather' ),
+				shortLabel: __( 'Dark', '4wp-weather' ),
+				value: STYLES.DARK,
+			},
+			{
+				label: __( 'White', '4wp-weather' ),
+				shortLabel: __( 'White', '4wp-weather' ),
+				value: STYLES.WHITE,
+			},
+		];
 
 	const providerSlug = provider || 'openweathermap';
 
@@ -45,67 +140,72 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			  ];
 
 	const blockProps = useBlockProps( {
-		className: 'forwp-weather-block',
+		className:
+			'forwp-weather-block forwp-weather--template-' +
+			widgetTemplate +
+			' forwp-weather--style-' +
+			widgetStyle,
 	} );
 
 	const geoButtonMode =
 		!! useBrowserGeolocation && browserGeoTrigger === 'button';
 
-	const visibilityRows = [
-		{
-			key: 'locationName',
-			show: !! showLocationName,
-			label: __( 'Location', '4wp-weather' ),
-		},
-		{
-			key: 'temperature',
-			show: !! showTemperature,
-			label: __( 'Temperature', '4wp-weather' ),
-		},
-		{
-			key: 'feelsLike',
-			show: !! showFeelsLike,
-			label: __( 'Feels like', '4wp-weather' ),
-		},
-		{
-			key: 'condition',
-			show: !! showCondition,
-			label: __( 'Condition', '4wp-weather' ),
-		},
-		{
-			key: 'humidity',
-			show: !! showHumidity,
-			label: __( 'Humidity', '4wp-weather' ),
-		},
-		{
-			key: 'pressure',
-			show: !! showPressure,
-			label: __( 'Pressure', '4wp-weather' ),
-		},
-		{
-			key: 'windSpeed',
-			show: !! showWindSpeed,
-			label: __( 'Wind', '4wp-weather' ),
-		},
-		{
-			key: 'sunrise',
-			show: !! showSunrise,
-			label: __( 'Sunrise', '4wp-weather' ),
-		},
-		{
-			key: 'sunset',
-			show: !! showSunset,
-			label: __( 'Sunset', '4wp-weather' ),
-		},
-	].filter( ( row ) => row.show );
+	const visibilityRows = WEATHER_FIELDS.filter(
+		( field ) => !! displayAttributes[ field.showAttr ]
+	).map( ( field ) => ( {
+		...field,
+		presentation: resolveFieldRow(
+			fieldPresentation,
+			field.key,
+			field.defaultIcon
+		),
+	} ) );
 
 	return (
 		<>
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Data provider', '4wp-weather' ) }
-					initialOpen={ true }
+					title={ __( 'Widget template', '4wp-weather' ) }
+					initialOpen={ false }
 				>
+					<TypeSwitcher
+						label={ __( 'Layout', '4wp-weather' ) }
+						value={ widgetTemplate }
+						options={ layoutOptions }
+						onChange={ ( value ) =>
+							applyWidgetPreset(
+								value,
+								widgetStyle,
+								setAttributes
+							)
+						}
+					/>
+					<TypeSwitcher
+						label={ __( 'Style', '4wp-weather' ) }
+						value={ widgetStyle }
+						options={ styleOptions }
+						onChange={ ( value ) =>
+							applyWidgetPreset(
+								widgetTemplate,
+								value,
+								setAttributes
+							)
+						}
+					/>
+					<p className="forwp-weather-inspector__help">
+						{ __(
+							'Layout sets which parameters are shown and their default icons. Style applies the card palette (Dark or White).',
+							'4wp-weather'
+						) }
+					</p>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Weather Location', '4wp-weather' ) }
+					initialOpen={ false }
+				>
+					<p className="forwp-weather-inspector__heading">
+						{ __( 'Weather provider', '4wp-weather' ) }
+					</p>
 					<SelectControl
 						label={ __( 'Provider', '4wp-weather' ) }
 						value={ providerSlug }
@@ -122,11 +222,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'4wp-weather'
 						) }
 					/>
-				</PanelBody>
-				<PanelBody
-					title={ __( 'Location', '4wp-weather' ) }
-					initialOpen={ false }
-				>
+
+					<p className="forwp-weather-inspector__heading">
+						{ __( 'Weather location', '4wp-weather' ) }
+					</p>
 					<ToggleControl
 						label={ __(
 							'Use visitor location (browser)',
@@ -223,102 +322,114 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					/>
 				</PanelBody>
+
 				<PanelBody
-					title={ __( 'Visible fields', '4wp-weather' ) }
-					initialOpen={ true }
+					title={ __( 'Weather Parameters', '4wp-weather' ) }
+					initialOpen={ false }
 				>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Location name', '4wp-weather' ) }
-							checked={ !! showLocationName }
-							onChange={ ( v ) =>
-								setAttributes( { showLocationName: v } )
-							}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Temperature', '4wp-weather' ) }
-							checked={ !! showTemperature }
-							onChange={ ( v ) =>
-								setAttributes( { showTemperature: v } )
-							}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Feels-like temperature', '4wp-weather' ) }
-							checked={ !! showFeelsLike }
-							onChange={ ( v ) =>
-								setAttributes( { showFeelsLike: v } )
-							}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Weather condition', '4wp-weather' ) }
-							checked={ !! showCondition }
-							onChange={ ( v ) =>
-								setAttributes( { showCondition: v } )
-							}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Humidity', '4wp-weather' ) }
-							checked={ !! showHumidity }
-							onChange={ ( v ) =>
-								setAttributes( { showHumidity: v } )
-							}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Pressure', '4wp-weather' ) }
-							checked={ !! showPressure }
-							onChange={ ( v ) =>
-								setAttributes( { showPressure: v } )
-							}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Wind speed', '4wp-weather' ) }
-							checked={ !! showWindSpeed }
-							onChange={ ( v ) =>
-								setAttributes( { showWindSpeed: v } )
-							}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Sunrise', '4wp-weather' ) }
-							checked={ !! showSunrise }
-							onChange={ ( v ) =>
-								setAttributes( { showSunrise: v } )
-							}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Sunset', '4wp-weather' ) }
-							checked={ !! showSunset }
-							onChange={ ( v ) =>
-								setAttributes( { showSunset: v } )
-							}
-						/>
-					</PanelRow>
+					{ WEATHER_FIELDS.map( ( field ) => {
+						const isVisible = !! displayAttributes[ field.showAttr ];
+						const row = resolveFieldRow(
+							fieldPresentation,
+							field.key,
+							field.defaultIcon
+						);
+						const showPresetIcon =
+							row.mode === PRESENTATION_MODES.ICON ||
+							row.mode === PRESENTATION_MODES.ICON_TEXT;
+						const showCustomSvg =
+							row.mode === PRESENTATION_MODES.CUSTOM_ICON;
+
+						return (
+							<ParamCollapsible
+								key={ field.key }
+								title={ field.label }
+							>
+								<ToggleControl
+									label={ __(
+										'Show in widget',
+										'4wp-weather'
+									) }
+									checked={ isVisible }
+									onChange={ ( value ) =>
+										setAttributes( {
+											[ field.showAttr ]: value,
+										} )
+									}
+								/>
+								{ isVisible && (
+									<div className="forwp-weather-param__settings">
+										<TypeSwitcher
+											label={ __(
+												'Type',
+												'4wp-weather'
+											) }
+											value={ row.mode }
+											options={ TYPE_OPTIONS }
+											onChange={ ( value ) =>
+												updateFieldPresentation(
+													field.key,
+													{ mode: value },
+													fieldPresentation,
+													setAttributes,
+													field.defaultIcon
+												)
+											}
+										/>
+										{ showPresetIcon && (
+											<BaseControl
+												label={ __(
+													'Icon',
+													'4wp-weather'
+												) }
+												className="forwp-weather-icon-picker-control"
+											>
+												<IconPicker
+													value={ row.icon }
+													style={ row }
+													onChange={ ( value ) =>
+														updateFieldPresentation(
+															field.key,
+															{
+																icon: value,
+															},
+															fieldPresentation,
+															setAttributes,
+															field.defaultIcon
+														)
+													}
+												/>
+											</BaseControl>
+										) }
+										{ showCustomSvg && (
+											<CustomIconPicker
+												presentation={ row }
+												onChange={ ( patch ) =>
+													updateFieldPresentation(
+														field.key,
+														patch,
+														fieldPresentation,
+														setAttributes,
+														field.defaultIcon
+													)
+												}
+											/>
+										) }
+									</div>
+								) }
+							</ParamCollapsible>
+						);
+					} ) }
 				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{/*
-					Mirror frontend card markup (templates/card-openweathermap.php) so Styles
-					and Visible fields match the published block.
-				*/}
 				<div className="forwp-weather__card">
 					<p className="forwp-weather__status screen-reader-text">
-						{ __( 'Editor preview — values load on the front end.', '4wp-weather' ) }
+						{ __(
+							'Editor preview — values load on the front end.',
+							'4wp-weather'
+						) }
 					</p>
 					{ geoButtonMode && (
 						<div className="forwp-weather__geo-bar">
@@ -373,7 +484,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										className="forwp-weather__value"
 									>
 										{ __(
-											'Enable at least one row under “Visible fields”.',
+											'Enable at least one parameter under “Weather Parameters”.',
 											'4wp-weather'
 										) }
 									</td>
@@ -386,9 +497,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									>
 										<th
 											scope="row"
-											className="forwp-weather__label"
+											className={
+												`forwp-weather__label forwp-weather__label--${ row.presentation.mode }` +
+												( row.presentation.labelText?.trim()
+													? ' forwp-weather__label--custom'
+													: '' )
+											}
 										>
-											{ row.label }
+											<FieldLabelPreview
+												label={ row.label }
+												presentation={
+													row.presentation
+												}
+												onLabelChange={ ( labelText ) =>
+													updateFieldPresentation(
+														row.key,
+														{ labelText },
+														fieldPresentation,
+														setAttributes,
+														row.defaultIcon
+													)
+												}
+											/>
 										</th>
 										<td className="forwp-weather__value">
 											—

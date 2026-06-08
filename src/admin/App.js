@@ -762,6 +762,276 @@ function ProvidersTab( { onOpenWpCliDocs = () => {} } ) {
 	);
 }
 
+const FIELD_LABELS = {
+	locationName: __( 'Location', '4wp-weather' ),
+	temperature: __( 'Temperature', '4wp-weather' ),
+	feelsLike: __( 'Feels like', '4wp-weather' ),
+	condition: __( 'Condition', '4wp-weather' ),
+	humidity: __( 'Humidity', '4wp-weather' ),
+	pressure: __( 'Pressure', '4wp-weather' ),
+	windSpeed: __( 'Wind', '4wp-weather' ),
+	sunrise: __( 'Sunrise', '4wp-weather' ),
+	sunset: __( 'Sunset', '4wp-weather' ),
+};
+
+function formatPresentationChip( row ) {
+	if ( ! row || typeof row !== 'object' ) {
+		return __( 'Text', '4wp-weather' );
+	}
+	const mode = row.mode || 'text';
+	const icon = row.icon ? ` · ${ row.icon }` : '';
+	if ( mode === 'icon' ) {
+		return __( 'Icon', '4wp-weather' ) + icon;
+	}
+	if ( mode === 'icon-text' ) {
+		return __( 'Mix', '4wp-weather' ) + icon;
+	}
+	if ( mode === 'custom-icon' ) {
+		return __( 'Custom', '4wp-weather' );
+	}
+	return __( 'Text', '4wp-weather' );
+}
+
+function SettingsTab() {
+	setupApiFetch();
+
+	const [ loading, setLoading ] = useState( true );
+	const [ saving, setSaving ] = useState( false );
+	const [ error, setError ] = useState( null );
+	const [ success, setSuccess ] = useState( false );
+	const [ layouts, setLayouts ] = useState( [] );
+	const [ styles, setStyles ] = useState( [] );
+	const [ selectedLayout, setSelectedLayout ] = useState( 'advanced' );
+	const [ selectedStyle, setSelectedStyle ] = useState( 'dark' );
+
+	const load = useCallback( async () => {
+		setLoading( true );
+		setError( null );
+		try {
+			const data = await apiFetch( { path: SETTINGS_PATH } );
+			setLayouts( data.widget_layouts || [] );
+			setStyles( data.widget_styles || [] );
+			setSelectedLayout( data.default_widget_layout || 'advanced' );
+			setSelectedStyle( data.default_widget_style || 'dark' );
+		} catch ( e ) {
+			setError(
+				e?.message ||
+					__( 'Could not load settings.', '4wp-weather' )
+			);
+		} finally {
+			setLoading( false );
+		}
+	}, [] );
+
+	useEffect( () => {
+		load();
+	}, [ load ] );
+
+	const save = async () => {
+		setSaving( true );
+		setError( null );
+		setSuccess( false );
+		try {
+			const data = await apiFetch( {
+				path: SETTINGS_PATH,
+				method: 'POST',
+				data: {
+					default_widget_layout: selectedLayout,
+					default_widget_style: selectedStyle,
+				},
+			} );
+			setLayouts( data.widget_layouts || [] );
+			setStyles( data.widget_styles || [] );
+			setSelectedLayout( data.default_widget_layout || 'advanced' );
+			setSelectedStyle( data.default_widget_style || 'dark' );
+			setSuccess( true );
+		} catch ( e ) {
+			setError(
+				e?.message ||
+					__( 'Could not save settings.', '4wp-weather' )
+			);
+		} finally {
+			setSaving( false );
+		}
+	};
+
+	const selectedRow =
+		layouts.find( ( row ) => row.slug === selectedLayout ) || null;
+
+	if ( loading ) {
+		return (
+			<div className="forwp-weather-admin-loading">
+				<Spinner />
+			</div>
+		);
+	}
+
+	return (
+		<div className="forwp-weather-admin-settings">
+			{ error && (
+				<Notice status="error" isDismissible onRemove={ () => setError( null ) }>
+					{ error }
+				</Notice>
+			) }
+			{ success && (
+				<Notice
+					status="success"
+					isDismissible
+					onRemove={ () => setSuccess( false ) }
+				>
+					{ __( 'Default widget template saved.', '4wp-weather' ) }
+				</Notice>
+			) }
+
+			<Card className="forwp-weather-settings-intro">
+				<CardBody>
+					<h3 className="forwp-weather-admin-section-title">
+						{ __( 'Default widget template', '4wp-weather' ) }
+					</h3>
+					<p className="forwp-weather-admin-muted">
+						{ __(
+							'Choose the layout and style applied when editors insert a new 4WP Weather block. Advanced is recommended for full cards.',
+							'4wp-weather'
+						) }
+					</p>
+				</CardBody>
+			</Card>
+
+			<h3 className="forwp-weather-admin-section-title forwp-weather-settings-layouts-title">
+				{ __( 'Layout', '4wp-weather' ) }
+			</h3>
+			<div className="forwp-weather-template-grid">
+				{ layouts.map( ( row ) => (
+					<div
+						key={ row.slug }
+						className={
+							'forwp-weather-template-card-wrap' +
+							( selectedLayout === row.slug ? ' is-selected' : '' )
+						}
+						role="button"
+						tabIndex={ 0 }
+						aria-pressed={ selectedLayout === row.slug }
+						onClick={ () => setSelectedLayout( row.slug ) }
+						onKeyDown={ ( event ) => {
+							if ( event.key === 'Enter' || event.key === ' ' ) {
+								event.preventDefault();
+								setSelectedLayout( row.slug );
+							}
+						} }
+					>
+						<Card className="forwp-weather-template-card">
+							<CardHeader>
+								<div className="forwp-weather-template-card-head">
+									<span className="forwp-weather-template-label">
+										{ row.label }
+									</span>
+									{ row.is_default && (
+										<span className="forwp-weather-badge forwp-weather-badge--live">
+											{ __( 'Default', '4wp-weather' ) }
+										</span>
+									) }
+								</div>
+							</CardHeader>
+							<CardBody>
+								<p className="forwp-weather-template-desc">
+									{ row.description }
+								</p>
+								<ul className="forwp-weather-template-fields">
+									{ ( row.visible_fields || [] ).map(
+										( fieldKey ) => (
+											<li key={ fieldKey }>
+												<span className="forwp-weather-template-fields__name">
+													{ FIELD_LABELS[ fieldKey ] ||
+														fieldKey }
+												</span>
+												<span className="forwp-weather-template-fields__chip">
+													{ formatPresentationChip(
+														row.field_presentation?.[
+															fieldKey
+														]
+													) }
+												</span>
+											</li>
+										)
+									) }
+								</ul>
+							</CardBody>
+						</Card>
+					</div>
+				) ) }
+			</div>
+
+			<div className="forwp-weather-settings-style-panel">
+				<h3 className="forwp-weather-admin-section-title">
+					{ __( 'Style', '4wp-weather' ) }
+				</h3>
+				<div
+					className="forwp-weather-style-switcher"
+					role="group"
+					aria-label={ __( 'Widget style', '4wp-weather' ) }
+				>
+					{ styles.map( ( row ) => (
+						<Button
+							key={ row.slug }
+							variant={
+								selectedStyle === row.slug
+									? 'primary'
+									: 'secondary'
+							}
+							onClick={ () => setSelectedStyle( row.slug ) }
+							className={
+								'forwp-weather-style-switcher__btn forwp-weather-style-switcher__btn--' +
+								row.slug
+							}
+						>
+							{ row.label }
+						</Button>
+					) ) }
+				</div>
+				<p className="forwp-weather-admin-muted">
+					{ __(
+						'Dark and White palettes are placeholders until final design samples are added.',
+						'4wp-weather'
+					) }
+				</p>
+			</div>
+
+			{ selectedRow && (
+				<Card className="forwp-weather-settings-summary">
+					<CardBody>
+						<p>
+							{ sprintf(
+								/* translators: 1: layout name, 2: style name */
+								__(
+									'New blocks will start as %1$s · %2$s.',
+									'4wp-weather'
+								),
+								selectedRow.label,
+								(
+									styles.find(
+										( s ) => s.slug === selectedStyle
+									) || { label: selectedStyle }
+								).label
+							) }
+						</p>
+					</CardBody>
+				</Card>
+			) }
+
+			<div className="forwp-weather-settings-actions">
+				<Button
+					variant="primary"
+					onClick={ save }
+					disabled={ saving }
+					isBusy={ saving }
+				>
+					{ __( 'Save default template', '4wp-weather' ) }
+				</Button>
+			</div>
+		</div>
+	);
+}
+
 function DocumentationTab() {
 	setupApiFetch();
 
@@ -993,6 +1263,21 @@ export default function App() {
 					<button
 						type="button"
 						role="tab"
+						id="forwp-weather-tab-settings"
+						className={
+							'components-button components-tab-panel__tabs-item forwp-weather-tab-settings' +
+							( activeTab === 'settings' ? ' is-active' : '' )
+						}
+						aria-selected={ activeTab === 'settings' }
+						aria-controls="forwp-weather-panel-settings"
+						tabIndex={ activeTab === 'settings' ? 0 : -1 }
+						onClick={ () => setActiveTab( 'settings' ) }
+					>
+						{ __( 'Settings', '4wp-weather' ) }
+					</button>
+					<button
+						type="button"
+						role="tab"
 						id="forwp-weather-tab-documentation"
 						className={
 							'components-button components-tab-panel__tabs-item forwp-weather-tab-docs' +
@@ -1014,6 +1299,15 @@ export default function App() {
 					hidden={ activeTab !== 'providers' }
 				>
 					<ProvidersTab onOpenWpCliDocs={ openWpCliDocumentation } />
+				</div>
+				<div
+					id="forwp-weather-panel-settings"
+					role="tabpanel"
+					aria-labelledby="forwp-weather-tab-settings"
+					className="components-tab-panel__tab-content"
+					hidden={ activeTab !== 'settings' }
+				>
+					<SettingsTab />
 				</div>
 				<div
 					id="forwp-weather-panel-documentation"

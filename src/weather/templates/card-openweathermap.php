@@ -8,6 +8,7 @@
  *
  * @var array<string,bool>   $visibility               Field toggles.
  * @var array<string,string> $labels                   Field labels.
+ * @var array<string, array{mode: string, icon: string}> $forwp_field_presentation Label modes.
  * @var bool                 $show_geo_consent_button When true, visitor must tap to allow geolocation.
  * @var bool                 $show_location_search    Location search form for visitors.
  * @var string               $forwp_weather_search_field_id Unique id for the search input label.
@@ -18,6 +19,12 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+use ForWP\Weather\Field_Presentation;
+
+if ( empty( $forwp_field_presentation ) || ! is_array( $forwp_field_presentation ) ) {
+	$forwp_field_presentation = Field_Presentation::resolve( array() );
+}
 
 ?>
 <div class="forwp-weather__card">
@@ -78,8 +85,26 @@ defined( 'ABSPATH' ) || exit;
 			<?php if ( empty( $visibility[ $forwp_weather_field ] ) ) : ?>
 				<?php continue; ?>
 			<?php endif; ?>
+			<?php
+			$forwp_weather_presentation_row = $forwp_field_presentation[ $forwp_weather_field ] ?? array(
+				'mode' => Field_Presentation::MODE_TEXT,
+				'icon' => 'map-pin',
+			);
+			$forwp_weather_label_mode       = isset( $forwp_weather_presentation_row['mode'] )
+				? sanitize_key( (string) $forwp_weather_presentation_row['mode'] )
+				: Field_Presentation::MODE_TEXT;
+			$forwp_weather_label_custom     = Field_Presentation::has_custom_label( $forwp_weather_presentation_row );
+			?>
 			<tr class="forwp-weather__row forwp-weather__row--<?php echo esc_attr( $forwp_weather_field ); ?>" data-forwp-field-row="<?php echo esc_attr( $forwp_weather_field ); ?>">
-				<th scope="row" class="forwp-weather__label"><?php echo esc_html( $forwp_weather_label_text ); ?></th>
+				<th scope="row" class="forwp-weather__label forwp-weather__label--<?php echo esc_attr( $forwp_weather_label_mode ); ?><?php echo $forwp_weather_label_custom ? ' forwp-weather__label--custom' : ''; ?>">
+					<?php
+					echo Field_Presentation::render_label_html(
+						$forwp_weather_field,
+						$forwp_weather_label_text,
+						$forwp_weather_presentation_row
+					); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in helper.
+					?>
+				</th>
 				<td class="forwp-weather__value" data-forwp-field="<?php echo esc_attr( $forwp_weather_field ); ?>">—</td>
 			</tr>
 		<?php endforeach; ?>
